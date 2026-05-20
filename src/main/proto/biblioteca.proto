@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+option java_package = "br.mackenzie.biblioteca";
+option java_outer_classname = "BibliotecaProto";
+option java_multiple_files = true;
+
+package biblioteca;
+
+// ─────────────────────────────────────────────
+// MENSAGENS — Livro
+// ─────────────────────────────────────────────
+
+message CadastrarLivroRequest {
+    string titulo  = 1;
+    string autor   = 2;
+    int32  ano     = 3;
+    string isbn    = 4;
+}
+
+message CadastrarLivroResponse {
+    string id      = 1;
+    bool   sucesso = 2;
+    string mensagem = 3;
+}
+
+message ListarLivrosPorAutorRequest {
+    string autor = 1;
+}
+
+message Livro {
+    string id     = 1;
+    string titulo = 2;
+    string autor  = 3;
+    int32  ano    = 4;
+    string isbn   = 5;
+}
+
+// ─────────────────────────────────────────────
+// MENSAGENS — Empréstimo
+// ─────────────────────────────────────────────
+
+message EmprestimoRequest {
+    string usuario  = 1;
+    string livro_id = 2;
+}
+
+message ResumoEmprestimos {
+    int32  total_registrados        = 1;
+    int64  tempo_processamento_ms   = 2;
+    string mensagem                 = 3;
+}
+
+// ─────────────────────────────────────────────
+// MENSAGENS — Chat
+// ─────────────────────────────────────────────
+
+message MensagemUsuario {
+    string usuario    = 1;
+    string mensagem   = 2;
+}
+
+message SugestaoLivro {
+    string titulo     = 1;
+    string autor      = 2;
+    string descricao  = 3;
+}
+
+// ─────────────────────────────────────────────
+// SERVIÇO
+// ─────────────────────────────────────────────
+
+service BibliotecaService {
+
+    // 1. Unary RPC
+    rpc cadastrarLivro (CadastrarLivroRequest) returns (CadastrarLivroResponse);
+
+    // 2. Server Streaming RPC
+    rpc listarLivrosPorAutor (ListarLivrosPorAutorRequest) returns (stream Livro);
+
+    // 3. Client Streaming RPC
+    rpc registrarEmprestimos (stream EmprestimoRequest) returns (ResumoEmprestimos);
+
+    // 4. Bidirectional Streaming RPC
+    rpc chatBibliotecario (stream MensagemUsuario) returns (stream SugestaoLivro);
+}
